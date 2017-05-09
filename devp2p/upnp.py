@@ -39,7 +39,7 @@ class UPnP(object):
                         log.info('Success. Now waiting for %s request on %s:%u' % (self.proto,externalipaddress,self.port))
                    else:
                         log.debug('Failed')
-        except Exception as e:
+      except Exception as e:
                 log.debug('Exception :%s', e)
 
 

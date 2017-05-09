@@ -13,8 +13,9 @@ import kademlia
 from peer import Peer
 import crypto
 import utils
-
 import slogging
+from upnp import UPnP
+
 log = slogging.get_logger('p2p.peermgr')
 
 
@@ -49,6 +50,9 @@ class PeerManager(WiredService):
     connect_timeout = 2.
     connect_loop_delay = 0.1
     discovery_delay = 0.5
+    nat_upnp = None
+
+
 
     def __init__(self, app):
         log.info('PeerManager init')
@@ -63,6 +67,8 @@ class PeerManager(WiredService):
 
         self.listen_addr = (self.config['p2p']['listen_host'], self.config['p2p']['listen_port'])
         self.server = StreamServer(self.listen_addr, handle=self._on_new_connection)
+        self.nat_upnp = UPnP(self.config['p2p']['listen_port'],'TCP')
+        self.nat_upnp.add_portmap()
 
     def on_hello_received(self, proto, version, client_version_string, capabilities,
                           listen_port, remote_pubkey):
@@ -216,6 +222,7 @@ class PeerManager(WiredService):
 
     def stop(self):
         log.info('stopping peermanager')
+        self.nat_upnp.delete_portmap()
         self.server.stop()
         for peer in self.peers:
             peer.stop()

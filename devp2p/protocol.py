@@ -183,3 +183,4 @@ class BaseProtocol(gevent.Greenlet):
         self.is_stopped = True
         self.service.on_wire_protocol_stop(self)
         super(BaseProtocol, self).kill()
+
